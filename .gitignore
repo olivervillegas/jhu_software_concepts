@@ -1,0 +1,37 @@
+# From jhu_software_concepts directory
+touch .gitignore
+```
+
+Then add this content to `.gitignore`:
+```
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Flask
+instance/
+.webassets-cache
+
+# Environment variables
+.envmodule_2/llm_hosting
+module_2/models/*.gguf

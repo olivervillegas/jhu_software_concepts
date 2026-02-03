@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Home - My Portfolio{% endblock %}
+
+{% block content %}
+<div class="home-container">
+    <div class="bio-section">
+        <h1>Jim Oliver Villegas</h1>
+        <h2>Data Engineer at Consulting Services Group</h2>
+        <p class="bio-text">
+          I'm a data engineer at Consulting Services 
+          Group and pursuing a master's degree in artificial intelligence at Johns Hopkins University. 
+          My work focuses on building scalable data systems and exploring how AI can be applied to solve 
+          complex, real-world problems. Outside of tech, I train Muay Thai nearly every day, stay active 
+          in the gym, and invest in real estate. I'm deeply passionate about the transformative potential 
+          of AI and its impact on the future.
+        </p>
+    </div>
+    <div class="image-section">
+        <img src="{{ url_for('static', filename='profile.jpg') }}" alt="Profile Picture">
+    </div>
+</div>
+{% endblock %}
