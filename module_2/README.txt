@@ -257,21 +257,21 @@ Each applicant entry contains the following fields:
 PROJECT STRUCTURE
 -----------------
 module_2/
-├── scrape.py                    # Main scraper script
-├── clean.py                     # Data cleaning script
-├── requirements.txt             # Python dependencies
-├── README.txt                   # This file
-├── screenshot_robots.jpg        # Screenshot of robots.txt
-├── applicant_data.json          # Raw scraped data (generated)
-├── applicant_data_cleaned.json  # Cleaned data (generated)
-├── applicant_data_final.jsonl   # LLM-processed JSONL (generated)
-├── applicant_data_final.json    # Final cleaned data (generated)
-└── llm_hosting/                 # LLM standardization package
-    ├── app.py                   # LLM application
-    ├── requirements.txt         # LLM dependencies
-    ├── canon_universities.txt   # Canonical university names
-    ├── canon_programs.txt       # Canonical program names
-    └── README.md                # LLM package documentation
+├── scrape.py                       # Main scraper script
+├── clean.py                        # Data cleaning script
+├── requirements.txt                # Python dependencies
+├── README.txt                      # This file
+├── screenshot_robots.jpg           # Screenshot of robots.txt
+├── applicant_data.json             # Raw scraped data (generated)
+├── applicant_data_cleaned.json     # Cleaned data (generated)
+├── llm_extend_applicant_data.jsonl # LLM-processed JSONL (generated)
+├── llm_extend_applicant_data.json  # Final cleaned data (generated)
+└── llm_hosting/                    # LLM standardization package
+    ├── app.py                      # LLM application
+    ├── requirements.txt            # LLM dependencies
+    ├── canon_universities.txt      # Canonical university names
+    ├── canon_programs.txt          # Canonical program names
+    └── README.md                   # LLM package documentation
 
 KNOWN ISSUES & IMPROVEMENTS
 ---------------------------
@@ -319,6 +319,30 @@ Future Improvements:
 4. Add data validation and quality metrics
 5. Create visualization of admission statistics
 6. Implement database storage for better querying
+
+KNOWN BUGS
+----------
+1. LLM University Standardization Error:
+   The LLM standardization incorrectly changes some university names to 
+   completely different institutions. For example:
+   - "Ohio State University - Columbus" → "University of British Columbia" (WRONG)
+   - "NYU Steinhardt" → "University of British Columbia" (WRONG)
+   
+   Root Cause: The tiny local LLM (TinyLlama-1.1B) is too small and hallucinates
+   university names. It appears to default to a few common universities when uncertain.
+   
+   Fix: Would require either:
+   a) Using a larger/better LLM model
+   b) Improving the canonical university list
+   c) Adding stricter post-processing rules to reject changes that are too different
+   d) Only using LLM for program names, not universities
+   
+   For now, the original "university" field should be trusted over 
+   "llm-generated-university" for most accurate data.
+
+2. GRE AW Score Extraction:
+   Some GRE Analytical Writing scores may not be captured due to format variations
+   on the website. This is a minor issue affecting <5% of entries.
 
 CANONICAL LIST UPDATES
 ----------------------
