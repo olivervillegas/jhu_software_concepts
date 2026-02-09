@@ -1,0 +1,464 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R] /Count 4 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 2527 >>
+stream
+BT
+/F1 10 Tf
+54 740 Td
+(Grad Cafe Data Analysis \(Module 3\)) Tj
+0 -12 Td
+(Generated: 2026-02-08 23:21) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(1\) How many entries do you have in your database who have applied for Fall 2026?) Tj
+0 -12 Td
+(Answer: 6990) Tj
+0 -12 Td
+(SQL:) Tj
+0 -12 Td
+(  SELECT COUNT\(*\)) Tj
+0 -12 Td
+(          FROM applicants) Tj
+0 -12 Td
+(          WHERE TRIM\(term\) = 'Fall 2026';) Tj
+0 -12 Td
+(Why this query:) Tj
+0 -12 Td
+(  Counts all rows where term equals 'Fall 2026' \(TRIM avoids trailing-space mismatches\).) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(-----------------------------------------------------------------------------------------------) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(2\) What percentage of entries are from international students \(to two decimal places\)?) Tj
+0 -12 Td
+(Answer: 44.36) Tj
+0 -12 Td
+(SQL:) Tj
+0 -12 Td
+(  SELECT) Tj
+0 -12 Td
+(            ROUND\() Tj
+0 -12 Td
+(              \(100.0 * COUNT\(*\) /) Tj
+0 -12 Td
+(               NULLIF\(\(SELECT COUNT\(*\) FROM applicants\), 0\)) Tj
+0 -12 Td
+(              \)::numeric,) Tj
+0 -12 Td
+(              2) Tj
+0 -12 Td
+(            \)) Tj
+0 -12 Td
+(          FROM applicants) Tj
+0 -12 Td
+(          WHERE us_or_international = 'International';) Tj
+0 -12 Td
+(Why this query:) Tj
+0 -12 Td
+(  International count divided by total entries times 100, rounded to 2 decimals. NULLIF prevents) Tj
+0 -12 Td
+(  divide-by-zero.) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(-----------------------------------------------------------------------------------------------) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(3\) What is the average GPA, GRE, GRE V, GRE AW of applicants who provide these metrics?) Tj
+0 -12 Td
+(Answer: \(Decimal\('3.75'\), Decimal\('204.89'\), Decimal\('160.42'\), Decimal\('8.51'\)\)) Tj
+0 -12 Td
+(SQL:) Tj
+0 -12 Td
+(  SELECT) Tj
+0 -12 Td
+(            ROUND\(AVG\(gpa\)::numeric, 2\),) Tj
+0 -12 Td
+(            ROUND\(AVG\(gre\)::numeric, 2\),) Tj
+0 -12 Td
+(            ROUND\(AVG\(gre_v\)::numeric, 2\),) Tj
+0 -12 Td
+(            ROUND\(AVG\(gre_aw\)::numeric, 2\)) Tj
+0 -12 Td
+(          FROM applicants) Tj
+0 -12 Td
+(          WHERE gpa IS NOT NULL) Tj
+0 -12 Td
+(             OR gre IS NOT NULL) Tj
+0 -12 Td
+(             OR gre_v IS NOT NULL) Tj
+0 -12 Td
+(             OR gre_aw IS NOT NULL;) Tj
+0 -12 Td
+(Why this query:) Tj
+0 -12 Td
+(  Averages numeric columns; restricts to rows where at least one metric exists.) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(-----------------------------------------------------------------------------------------------) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 2515 >>
+stream
+BT
+/F1 10 Tf
+54 740 Td
+(Grad Cafe Data Analysis \(Module 3\)) Tj
+0 -12 Td
+(Generated: 2026-02-08 23:21) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(4\) What is the average GPA of American students in Fall 2026?) Tj
+0 -12 Td
+(Answer: 3.79) Tj
+0 -12 Td
+(SQL:) Tj
+0 -12 Td
+(  SELECT ROUND\(AVG\(gpa\)::numeric, 2\)) Tj
+0 -12 Td
+(          FROM applicants) Tj
+0 -12 Td
+(          WHERE TRIM\(term\) = 'Fall 2026') Tj
+0 -12 Td
+(            AND us_or_international = 'American') Tj
+0 -12 Td
+(            AND gpa IS NOT NULL;) Tj
+0 -12 Td
+(Why this query:) Tj
+0 -12 Td
+(  Filters to Fall 2026 + American + non-null GPA, then averages.) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(-----------------------------------------------------------------------------------------------) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(5\) What percent of entries for Fall 2026 are Acceptances \(to two decimal places\)?) Tj
+0 -12 Td
+(Answer: 24.32) Tj
+0 -12 Td
+(SQL:) Tj
+0 -12 Td
+(  SELECT) Tj
+0 -12 Td
+(            CASE) Tj
+0 -12 Td
+(              WHEN \(SELECT COUNT\(*\) FROM applicants WHERE TRIM\(term\) = 'Fall 2026'\) = 0) Tj
+0 -12 Td
+(              THEN 0) Tj
+0 -12 Td
+(              ELSE ROUND\() Tj
+0 -12 Td
+(                \(100.0 * COUNT\(*\) /) Tj
+0 -12 Td
+(                 \(SELECT COUNT\(*\) FROM applicants WHERE TRIM\(term\) = 'Fall 2026'\)) Tj
+0 -12 Td
+(                \)::numeric,) Tj
+0 -12 Td
+(                2) Tj
+0 -12 Td
+(              \)) Tj
+0 -12 Td
+(            END) Tj
+0 -12 Td
+(          FROM applicants) Tj
+0 -12 Td
+(          WHERE TRIM\(term\) = 'Fall 2026') Tj
+0 -12 Td
+(            AND status = 'Accepted';) Tj
+0 -12 Td
+(Why this query:) Tj
+0 -12 Td
+(  Accepted count divided by total Fall 2026 count times 100; CASE prevents division by zero.) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(-----------------------------------------------------------------------------------------------) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(6\) What is the average GPA of applicants who applied for Fall 2026 who are Acceptances?) Tj
+0 -12 Td
+(Answer: 3.76) Tj
+0 -12 Td
+(SQL:) Tj
+0 -12 Td
+(  SELECT ROUND\(AVG\(gpa\)::numeric, 2\)) Tj
+0 -12 Td
+(          FROM applicants) Tj
+0 -12 Td
+(          WHERE TRIM\(term\) = 'Fall 2026') Tj
+0 -12 Td
+(            AND status = 'Accepted') Tj
+0 -12 Td
+(            AND gpa IS NOT NULL;) Tj
+0 -12 Td
+(Why this query:) Tj
+0 -12 Td
+(  Filters to accepted Fall 2026 applicants with GPA and averages.) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(-----------------------------------------------------------------------------------------------) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 2950 >>
+stream
+BT
+/F1 10 Tf
+54 740 Td
+(Grad Cafe Data Analysis \(Module 3\)) Tj
+0 -12 Td
+(Generated: 2026-02-08 23:21) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(7\) How many entries are from applicants who applied to JHU for a masters degree in Computer Science?) Tj
+0 -12 Td
+(Answer: 6) Tj
+0 -12 Td
+(SQL:) Tj
+0 -12 Td
+(  SELECT COUNT\(*\)) Tj
+0 -12 Td
+(          FROM applicants) Tj
+0 -12 Td
+(          WHERE program ILIKE '%Johns Hopkins%') Tj
+0 -12 Td
+(            AND program ILIKE '%Computer Science%') Tj
+0 -12 Td
+(            AND degree = 'Masters';) Tj
+0 -12 Td
+(Why this query:) Tj
+0 -12 Td
+(  Case-insensitive matching with ILIKE on program text and restricts degree to Masters.) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(-----------------------------------------------------------------------------------------------) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(8\) How many Fall 2026 acceptances are from applicants who applied to Georgetown, MIT, Stanford, or CMU for a PhD in CS? \(downloaded fields\)) Tj
+0 -12 Td
+(Answer: 2) Tj
+0 -12 Td
+(SQL:) Tj
+0 -12 Td
+(  SELECT COUNT\(*\)) Tj
+0 -12 Td
+(          FROM applicants) Tj
+0 -12 Td
+(          WHERE TRIM\(term\) = 'Fall 2026') Tj
+0 -12 Td
+(            AND degree = 'PhD') Tj
+0 -12 Td
+(            AND status = 'Accepted') Tj
+0 -12 Td
+(            AND program ILIKE '%Computer Science%') Tj
+0 -12 Td
+(            AND \() Tj
+0 -12 Td
+(              program ILIKE '%Georgetown%' OR) Tj
+0 -12 Td
+(              program ILIKE '%MIT%' OR) Tj
+0 -12 Td
+(              program ILIKE '%Stanford%' OR) Tj
+0 -12 Td
+(              program ILIKE '%Carnegie Mellon%') Tj
+0 -12 Td
+(            \);) Tj
+0 -12 Td
+(Why this query:) Tj
+0 -12 Td
+(  Filters by term/degree/status and matches university keywords inside the original program text.) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(-----------------------------------------------------------------------------------------------) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(9\) Do the numbers for question 8 change if you use LLM-generated fields?) Tj
+0 -12 Td
+(Answer: 2) Tj
+0 -12 Td
+(SQL:) Tj
+0 -12 Td
+(  SELECT COUNT\(*\)) Tj
+0 -12 Td
+(          FROM applicants) Tj
+0 -12 Td
+(          WHERE TRIM\(term\) = 'Fall 2026') Tj
+0 -12 Td
+(            AND degree = 'PhD') Tj
+0 -12 Td
+(            AND status = 'Accepted') Tj
+0 -12 Td
+(            AND llm_generated_program ILIKE '%Computer Science%') Tj
+0 -12 Td
+(            AND \() Tj
+0 -12 Td
+(              llm_generated_university ILIKE '%Georgetown%' OR) Tj
+0 -12 Td
+(              llm_generated_university ILIKE '%MIT%' OR) Tj
+0 -12 Td
+(              llm_generated_university ILIKE '%Stanford%' OR) Tj
+0 -12 Td
+(              llm_generated_university ILIKE '%Carnegie Mellon%') Tj
+0 -12 Td
+(            \);) Tj
+0 -12 Td
+(Why this query:) Tj
+0 -12 Td
+(  Same as Q8 but matches CS + universities using normalized LLM-generated fields.) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(-----------------------------------------------------------------------------------------------) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 1954 >>
+stream
+BT
+/F1 10 Tf
+54 740 Td
+(Grad Cafe Data Analysis \(Module 3\)) Tj
+0 -12 Td
+(Generated: 2026-02-08 23:21) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(10\) Additional Question: What are the top 5 universities by number of entries \(LLM university field\)?) Tj
+0 -12 Td
+(Answer: University of California: 1774; University of Michigan: 1136; Stanford University: 1125; Columbia University: 1038; Yale University: 977) Tj
+0 -12 Td
+(SQL:) Tj
+0 -12 Td
+(  SELECT STRING_AGG\(x, '; '\)) Tj
+0 -12 Td
+(          FROM \() Tj
+0 -12 Td
+(            SELECT llm_generated_university || ': ' || COUNT\(*\) AS x) Tj
+0 -12 Td
+(            FROM applicants) Tj
+0 -12 Td
+(            WHERE llm_generated_university IS NOT NULL) Tj
+0 -12 Td
+(            GROUP BY llm_generated_university) Tj
+0 -12 Td
+(            ORDER BY COUNT\(*\) DESC) Tj
+0 -12 Td
+(            LIMIT 5) Tj
+0 -12 Td
+(          \) t;) Tj
+0 -12 Td
+(Why this query:) Tj
+0 -12 Td
+(  Counts entries per LLM-normalized university and returns the top 5 as a readable summary) Tj
+0 -12 Td
+(  string.) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(-----------------------------------------------------------------------------------------------) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(11\) Additional Question: What is the overall acceptance rate across all terms \(to two decimals\)?) Tj
+0 -12 Td
+(Answer: 35.21) Tj
+0 -12 Td
+(SQL:) Tj
+0 -12 Td
+(  SELECT) Tj
+0 -12 Td
+(            ROUND\() Tj
+0 -12 Td
+(              \(100.0 * \(SELECT COUNT\(*\) FROM applicants WHERE status='Accepted'\) /) Tj
+0 -12 Td
+(               NULLIF\(\(SELECT COUNT\(*\) FROM applicants\), 0\)) Tj
+0 -12 Td
+(              \)::numeric,) Tj
+0 -12 Td
+(              2) Tj
+0 -12 Td
+(            \);) Tj
+0 -12 Td
+(Why this query:) Tj
+0 -12 Td
+(  Computes accepted / total * 100 and rounds to 2 decimals. NULLIF prevents divide-by-zero.) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+(-----------------------------------------------------------------------------------------------) Tj
+0 -12 Td
+() Tj
+0 -12 Td
+ET
+endstream
+endobj
+xref
+0 12
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000140 00000 n 
+0000000210 00000 n 
+0000000336 00000 n 
+0000002915 00000 n 
+0000003041 00000 n 
+0000005608 00000 n 
+0000005734 00000 n 
+0000008736 00000 n 
+0000008864 00000 n 
+trailer
+<< /Size 12 /Root 1 0 R >>
+startxref
+10871
+%%EOF

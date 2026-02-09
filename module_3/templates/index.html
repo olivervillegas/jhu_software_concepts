@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Grad Café Data Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Grad School Café Data Analysis</h1>
+
+    <div class="buttons">
+        <a href="/pull-data">Pull Data</a>
+        <a href="/update-analysis">Update Analysis</a>
+    </div>
+
+    <ul>
+        {% for key, value in results.items() %}
+        <li><strong>{{ key.replace("_"," ").title() }}:</strong> {{ value }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
