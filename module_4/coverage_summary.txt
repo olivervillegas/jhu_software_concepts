@@ -1,16 +1,16 @@
-..................                                                       [100%]
+......................                                                   [100%]
 ================================ tests coverage ================================
 _______________ coverage: platform darwin, python 3.12.3-final-0 _______________
 
 Name                Stmts   Miss  Cover   Missing
 -------------------------------------------------
 src/__init__.py         0      0   100%
-src/config.py           9      0   100%
+src/config.py           7      0   100%
 src/db.py              21      0   100%
-src/etl.py             26      0   100%
-src/flask_app.py       46      0   100%
+src/etl.py             40      0   100%
+src/flask_app.py       49      0   100%
 src/query_data.py      30      0   100%
 -------------------------------------------------
-TOTAL                 132      0   100%
+TOTAL                 147      0   100%
 Required test coverage of 100% reached. Total coverage: 100.00%
-18 passed in 1.85s
+22 passed in 1.08s

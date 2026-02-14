@@ -1,65 +1,88 @@
 from __future__ import annotations
-from dataclasses import dataclass
-from typing import Callable, Any, Dict, Optional
 
-from flask import Flask, render_template, jsonify
+import os
+from flask import Flask, jsonify, render_template, redirect, url_for
 
-from .config import Config
 from .db import DB, ensure_schema
-from .etl import pull_and_load
-from .query_data import get_results, format_for_display
+from .etl import pull_and_load, file_scraper
+from .query_data import get_results
 
-@dataclass
+
 class BusyFlag:
-    value: bool = False
+    def __init__(self):
+        self.busy = False
+
 
 def create_app(
-    config: Optional[type[Config]] = None,
-    *,
-    db: Optional[DB] = None,
-    scraper_fn: Optional[Callable[[], list[dict[str, Any]]]] = None,
-    results_fn: Optional[Callable[[DB], Dict[str, Any]]] = None,
-    busy_flag: Optional[BusyFlag] = None,
-) -> Flask:
-    app = Flask(__name__, template_folder="templates")
-    app.config.from_object(config or Config)
+    database_url: str | None = None,
+    scraper_fn=None,
+    busy_flag: BusyFlag | None = None,
+):
+    app = Flask(__name__)
 
-    app.db = db or DB(url=app.config["DATABASE_URL"])
-    ensure_schema(app.db)
+    # ----------------------------------------
+    # Database setup
+    # ----------------------------------------
+    if database_url is None:
+        database_url = os.environ.get("DATABASE_URL")
 
+    if not database_url:
+        raise RuntimeError("DATABASE_URL must be provided")
+
+    db = DB(url=database_url)
+    ensure_schema(db)
+
+    # ----------------------------------------
+    # Default scraper wiring
+    # ----------------------------------------
+    if scraper_fn is None:
+        scraper_fn = file_scraper
+
+    if busy_flag is None:
+        busy_flag = BusyFlag()
+
+    app.db = db
     app.scraper_fn = scraper_fn
-    app.results_fn = results_fn or get_results
-    app.busy_flag = busy_flag or BusyFlag(False)
-    app.cached_results = None
+    app.busy_flag = busy_flag
 
+    # ----------------------------------------
+    # Routes
+    # ----------------------------------------
+
+    @app.get("/")
     @app.get("/analysis")
     def analysis():
-        results = app.cached_results or app.results_fn(app.db)
-        formatted = {k: format_for_display(k, v) for k, v in results.items()}
+        results = get_results(db)
+
+        # Format percentages to two decimals if numeric
+        formatted = {}
+        for k, v in results.items():
+            if isinstance(v, (int, float)):
+                formatted[k] = f"{v:.2f}%"
+            else:
+                formatted[k] = v if v is not None else "N/A"
+
         return render_template("analysis.html", results=formatted)
 
     @app.post("/pull-data")
     def pull_data():
-        if app.busy_flag.value:
-            return jsonify({"busy": True}), 409
-        if app.scraper_fn is None:
-            return jsonify({"ok": False, "error": "No scraper configured"}), 500
-        app.busy_flag.value = True
+        if app.busy_flag.busy:
+            return redirect(url_for("analysis"))
+
+        app.busy_flag.busy = True
+
         try:
-            info = pull_and_load(app.db, app.scraper_fn)
-            return jsonify({"ok": True, **info}), 200
+            pull_and_load(app.db, app.scraper_fn)
         finally:
-            app.busy_flag.value = False
+            app.busy_flag.busy = False
+
+        return redirect(url_for("analysis"))
 
     @app.post("/update-analysis")
     def update_analysis():
-        if app.busy_flag.value:
-            return jsonify({"busy": True}), 409
-        app.cached_results = app.results_fn(app.db)
-        return jsonify({"ok": True}), 200
+        if app.busy_flag.busy:
+            return redirect(url_for("analysis"))
 
-    @app.get("/")
-    def index():
-        return analysis()
+        return redirect(url_for("analysis"))
 
     return app
