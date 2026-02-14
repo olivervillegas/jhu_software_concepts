@@ -37,7 +37,6 @@ def ensure_schema(db: DB) -> None:
     uniq = """
     CREATE UNIQUE INDEX IF NOT EXISTS uq_applicants_url
     ON applicants(url)
-    WHERE url IS NOT NULL;
     """
 
     with connect(db) as conn:
