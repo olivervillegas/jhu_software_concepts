@@ -1,9 +1,3 @@
-# From jhu_software_concepts directory
-touch .gitignore
-```
-
-Then add this content to `.gitignore`:
-```
 # Virtual environments
 venv/
 env/
@@ -41,3 +35,4 @@ module_2/models/*.gguf
 
 dependency.svg
 snyk-analysis.png
+*.egg-info/
