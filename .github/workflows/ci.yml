@@ -62,10 +62,14 @@ jobs:
         run: |
           pytest --cov=src --cov-fail-under=100
 
-      - name: Snyk test (required)
-        if: ${{ secrets.SNYK_TOKEN != '' }}
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: Snyk test (optional)
         run: |
+          if [ -z "${SNYK_TOKEN}" ]; then
+            echo "SNYK_TOKEN not set; skipping snyk test"
+            exit 0
+          fi
           npm install -g snyk
           snyk test || true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        
