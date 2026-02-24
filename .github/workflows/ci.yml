@@ -5,64 +5,51 @@ on:
   pull_request:
 
 jobs:
-  lint-test-security:
+  test-lint-security:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_DB: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    env:
-      DB_HOST: localhost
-      DB_PORT: 5432
-      DB_NAME: postgres
-      DB_USER: postgres
-      DB_PASSWORD: postgres
+    defaults:
+      run:
+        working-directory: module_5
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install OS deps (Graphviz)
+      - name: Install OS deps (graphviz for pydeps)
         run: |
           sudo apt-get update
           sudo apt-get install -y graphviz
 
-      - name: Install Python deps
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -e .
 
-      - name: Pylint (must be 10/10)
+      - name: Pylint (src only)
         run: |
           pylint src --fail-under=10
 
-      - name: Generate dependency graph (dependency.svg)
+      - name: Generate dependency graph
         run: |
           pydeps src --noshow -T svg -o dependency.svg
           test -f dependency.svg
 
       - name: Pytest + coverage
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           pytest --cov=src --cov-fail-under=100
 
       - name: Snyk test (optional)
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: |
           if [ -z "${SNYK_TOKEN}" ]; then
             echo "SNYK_TOKEN not set; skipping snyk test"
@@ -70,6 +57,3 @@ jobs:
           fi
           npm install -g snyk
           snyk test || true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        
