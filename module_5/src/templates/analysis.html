@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Analysis</title>
+</head>
+<body>
+  <h1>Analysis</h1>
+
+  <form method="post" action="/pull-data">
+    <button data-testid="pull-data-btn" type="submit">Pull Data</button>
+  </form>
+
+  <form method="post" action="/update-analysis">
+    <button data-testid="update-analysis-btn" type="submit">Update Analysis</button>
+  </form>
+
+  <ul data-testid="analysis-list">
+    {% for key, value in results.items() %}
+      <li><strong>{{ key }}:</strong> <span><strong>Answer:</strong> {{ value }}</span></li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
