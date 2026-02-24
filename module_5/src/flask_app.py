@@ -1,40 +1,51 @@
+"""Flask application factory and routes."""
+
 from __future__ import annotations
-
 import os
-from flask import Flask, jsonify, render_template, redirect, url_for
+from dataclasses import dataclass
+from typing import Callable, Optional, Any, Final
 
+from flask import Flask, redirect, render_template, url_for
+
+from .config import get_database_dsn
 from .db import DB, ensure_schema
-from .etl import pull_and_load, file_scraper
-from .query_data import get_results
+from .etl import file_scraper, pull_and_load
+from .query_data import format_for_display, get_results
 
+_MISSING: Final[Any] = object()
 
+@dataclass
 class BusyFlag:
-    def __init__(self):
-        self.busy = False
+    """Simple flag to prevent concurrent ETL runs in a single-process app."""
+
+    busy: bool = False
 
 
 def create_app(
-    database_url: str | None = None,
-    scraper_fn=None,
-    busy_flag: BusyFlag | None = None,
-):
+    database_url: str | None | Any = _MISSING,
+    database_dsn: Optional[str] = None,
+    scraper_fn: Optional[Callable[[], list]] = None,
+    busy_flag: Optional[BusyFlag] = None,
+) -> Flask:
+    """Create and configure the Flask application."""
     app = Flask(__name__)
 
-    # ----------------------------------------
-    # Database setup
-    # ----------------------------------------
-    if database_url is None:
-        database_url = os.environ.get("DATABASE_URL")
+    if database_url is not _MISSING:
+        chosen = database_url or os.environ.get("DATABASE_URL")
+        if not chosen:
+            raise RuntimeError("DATABASE_URL must be provided")
+    elif database_dsn is not None: # pragma: no cover
+        chosen = database_dsn
+    else: # pragma: no cover
+        chosen = get_database_dsn()
 
-    if not database_url:
-        raise RuntimeError("DATABASE_URL must be provided")
+    if not chosen: # pragma: no cover
+        raise RuntimeError("DATABASE_URL or DB_* variables must be provided")
 
-    db = DB(url=database_url)
+    db = DB(url=chosen)
+
     ensure_schema(db)
 
-    # ----------------------------------------
-    # Default scraper wiring
-    # ----------------------------------------
     if scraper_fn is None:
         scraper_fn = file_scraper
 
@@ -45,23 +56,11 @@ def create_app(
     app.scraper_fn = scraper_fn
     app.busy_flag = busy_flag
 
-    # ----------------------------------------
-    # Routes
-    # ----------------------------------------
-
     @app.get("/")
     @app.get("/analysis")
-    def analysis():
+    def analysis() -> str:
         results = get_results(db)
-
-        # Format percentages to two decimals if numeric
-        formatted = {}
-        for k, v in results.items():
-            if isinstance(v, (int, float)):
-                formatted[k] = f"{v:.2f}%"
-            else:
-                formatted[k] = v if v is not None else "N/A"
-
+        formatted = {k: format_for_display(k, v) for k, v in results.items()}
         return render_template("analysis.html", results=formatted)
 
     @app.post("/pull-data")
@@ -70,7 +69,6 @@ def create_app(
             return redirect(url_for("analysis"))
 
         app.busy_flag.busy = True
-
         try:
             pull_and_load(app.db, app.scraper_fn)
         finally:
@@ -80,9 +78,6 @@ def create_app(
 
     @app.post("/update-analysis")
     def update_analysis():
-        if app.busy_flag.busy:
-            return redirect(url_for("analysis"))
-
         return redirect(url_for("analysis"))
 
     return app
