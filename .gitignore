@@ -33,6 +33,4 @@ instance/
 .envmodule_2/llm_hosting
 module_2/models/*.gguf
 
-dependency.svg
-snyk-analysis.png
 *.egg-info/
