@@ -9,6 +9,8 @@ venv/
 env/
 ENV/
 .venv
+.venv/
+.env
 
 # Python
 __pycache__/
@@ -16,6 +18,7 @@ __pycache__/
 *$py.class
 *.so
 .Python
+*.pyc
 
 # IDEs
 .vscode/
@@ -35,3 +38,6 @@ instance/
 # Environment variables
 .envmodule_2/llm_hosting
 module_2/models/*.gguf
+
+dependency.svg
+snyk-analysis.png
