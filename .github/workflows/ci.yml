@@ -5,12 +5,31 @@ on:
   pull_request:
 
 jobs:
-  test-lint-security:
+  module5:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: gradcafe
+          POSTGRES_PASSWORD: gradcafe
+          POSTGRES_DB: gradcafe
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U gradcafe -d gradcafe"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
 
     defaults:
       run:
         working-directory: module_5
+
+    env:
+      # Force TCP (not socket) and point tests at the CI Postgres service.
+      DATABASE_URL: postgresql://gradcafe:gradcafe@127.0.0.1:5432/gradcafe
 
     steps:
       - name: Checkout
@@ -21,10 +40,19 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install OS deps (graphviz for pydeps)
+      - name: Install OS deps (graphviz + postgres client)
         run: |
           sudo apt-get update
-          sudo apt-get install -y graphviz
+          sudo apt-get install -y graphviz postgresql-client
+
+      - name: Wait for Postgres
+        run: |
+          for i in {1..30}; do
+            pg_isready -h 127.0.0.1 -p 5432 -U gradcafe -d gradcafe && exit 0
+            sleep 1
+          done
+          echo "Postgres did not become ready in time" >&2
+          exit 1
 
       - name: Install Python dependencies
         run: |
@@ -42,8 +70,6 @@ jobs:
           test -f dependency.svg
 
       - name: Pytest + coverage
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           pytest --cov=src --cov-fail-under=100
 
