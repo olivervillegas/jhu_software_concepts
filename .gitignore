@@ -30,7 +30,8 @@ instance/
 .webassets-cache
 
 # Environment variables
-.envmodule_2/llm_hosting
+.env
+module_2/llm_hosting
 module_2/models/*.gguf
 
 *.egg-info/
