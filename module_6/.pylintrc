@@ -1,0 +1,23 @@
+[MASTER]
+ignore=tests,docs,data,.venv
+jobs=0
+extension-pkg-allow-list=psycopg
+
+[MESSAGES CONTROL]
+disable=
+  missing-module-docstring,
+  too-few-public-methods,
+  broad-exception-raised,
+  broad-exception-caught
+
+[FORMAT]
+max-line-length=100
+
+[DESIGN]
+max-args=6
+max-locals=20
+max-branches=15
+max-statements=60
+
+[TYPECHECK]
+generated-members=psycopg.*
