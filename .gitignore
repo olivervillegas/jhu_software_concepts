@@ -31,6 +31,7 @@ instance/
 
 # Environment variables
 .env
+.env.example
 module_2/llm_hosting
 module_2/models/*.gguf
 
