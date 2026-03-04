@@ -1,1 +1,1 @@
-"""Module 4 Grad Café Analytics package."""
+"""Module 6 source root package."""

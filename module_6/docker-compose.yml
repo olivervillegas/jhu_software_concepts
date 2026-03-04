@@ -17,7 +17,7 @@ services:
   rabbitmq:
     image: rabbitmq:3.13-management
     ports:
-      - "15672:15672"   # dev-only management UI
+      - "15672:15672" # dev-only management UI
     healthcheck:
       test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
       interval: 5s
@@ -25,10 +25,11 @@ services:
       retries: 10
 
   web:
-    build: ./src/web
+    build:
+      context: .
+      dockerfile: src/web/Dockerfile
     environment:
       FLASK_SECRET: ${FLASK_SECRET}
-      FLASK_DEBUG: ${FLASK_DEBUG}
       DATABASE_URL: ${DATABASE_URL}
       RABBITMQ_URL: ${RABBITMQ_URL}
     ports:
@@ -40,12 +41,13 @@ services:
         condition: service_healthy
 
   worker:
-    build: ./src/worker
+    build:
+      context: .
+      dockerfile: src/worker/Dockerfile
     environment:
       DATABASE_URL: ${DATABASE_URL}
       RABBITMQ_URL: ${RABBITMQ_URL}
       SEED_JSON: /data/applicant_data.json
-      WATERMARK_SOURCE: applicant_data
     volumes:
       - ./src/data:/data:ro
     depends_on:

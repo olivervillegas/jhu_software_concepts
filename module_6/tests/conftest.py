@@ -1,11 +1,11 @@
-import os
+from __future__ import annotations
+
 import pytest
-from src.db import DB, ensure_schema, truncate_all
+
 
 @pytest.fixture
-def test_db():
-    url = os.environ["DATABASE_URL"]  # workflow must set this
-    db = DB(url=url)
-    ensure_schema(db)
-    truncate_all(db)
-    return db
+def env(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("RABBITMQ_URL", "amqp://guest:guest@rabbitmq:5672/")
+    monkeypatch.setenv("DATABASE_URL", "postgresql://u:p@db:5432/x")
+    monkeypatch.setenv("FLASK_SECRET", "test-secret")
+    return monkeypatch
